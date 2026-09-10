@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from 'react'
+import { useEffect, useState, type FormEvent } from 'react'
 import { AlertTriangle, RefreshCw, Sprout } from 'lucide-react'
 import { Button } from '@/components/common/Button'
 import { SelectField } from '@/components/common/FormField'
@@ -6,16 +6,38 @@ import { useAi } from '@/context/AiContext'
 import { useLanguage } from '@/context/LanguageContext'
 import { cropAnalysisService, type AdvisoryResult } from '@/services/aiService'
 import { getApiErrorMessage } from '@/services/api'
-import { mandiCrops } from '@/data/mock/mockMandiData'
+import { mandiService } from '@/services/mandiService'
 
 export default function CropRotationPage() {
-  const [current, setCurrent] = useState(mandiCrops[0])
+  const [crops, setCrops] = useState<string[]>([])
+  const [current, setCurrent] = useState('')
   const [soil, setSoil] = useState('Black soil')
   const [result, setResult] = useState<AdvisoryResult | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
   const { refreshHistory } = useAi()
   const { language } = useLanguage()
+
+  useEffect(() => {
+    let cancelled = false
+    mandiService.getCrops()
+      .then((response) => {
+        const items = response?.data ?? response ?? []
+        const names = Array.isArray(items)
+          ? items.map((item: { name?: string } | string) => typeof item === 'string' ? item : item.name).filter((name): name is string => Boolean(name))
+          : []
+        if (!cancelled) {
+          setCrops(names)
+          if (names.length > 0) {
+            setCurrent(names[0])
+          }
+        }
+      })
+      .catch((err) => {
+        console.error('Failed to load crops', err)
+      })
+    return () => { cancelled = true }
+  }, [])
 
   async function handleSubmit(event: FormEvent) {
     event.preventDefault()
@@ -94,7 +116,7 @@ export default function CropRotationPage() {
 
       <form onSubmit={handleSubmit}>
         <SelectField id="current" label="Current Crop" value={current} onChange={(e) => setCurrent(e.target.value)}>
-          {mandiCrops.map((c) => (
+          {crops.map((c) => (
             <option key={c}>{c}</option>
           ))}
         </SelectField>
@@ -104,7 +126,7 @@ export default function CropRotationPage() {
           ))}
         </SelectField>
         {error && <p className="mb-3 text-xs font-medium text-danger-500">{error}</p>}
-        <Button type="submit" fullWidth loading={isLoading}>
+        <Button type="submit" fullWidth loading={isLoading} disabled={!crops.length || !current.trim()}>
           Get Rotation Plan
         </Button>
       </form>

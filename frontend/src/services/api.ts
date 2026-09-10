@@ -5,12 +5,8 @@ import axios, { AxiosError } from 'axios'
  * etc.) imports `api` from here so base URL, headers, and interceptors stay
  * in one place.
  *
- * Backend integration status: auth, categories, products, reviews, wishlist,
- * cart, orders, payments, and notifications are wired to the real API (see
- * the matching service files). Features the backend doesn't implement yet
- * (land, machinery, mandi, weather, AI, seeds) still resolve mock data via
- * simulateRequest() below until a backend module exists for them.
- * Seller and admin tooling deliberately stay on local/mock state for now.
+ * All runtime feature services use the backend API. Keep this module focused
+ * on transport, authentication, token refresh, and API error handling.
  */
 export const api = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
@@ -124,12 +120,10 @@ api.interceptors.response.use(
 
 /** Pulls a readable message out of a failed Axios request, matching the backend's { success:false, message } shape. */
 /**
- * Pulls a readable message out of a failed Axios request, matching the
- * backend's `{ success:false, message, details? }` shape. Validation errors
- * (400s from the Zod `validate` middleware) carry a generic top-level
- * message ("Validation failed.") plus a `details` array of per-field
- * reasons — surface the first of those instead, since that's the part
- * that actually tells the person what to fix.
+ * Pulls a readable message out of an Axios request, matching the backend's
+ * `{ success:false, message, details? }` shape. Validation errors (400s from
+ * the Zod `validate` middleware) carry a generic top-level message plus a
+ * `details` array of per-field reasons, so surface those first.
  */
 export function getApiErrorMessage(error: unknown, fallback = 'Something went wrong. Please try again.'): string {
   if (axios.isAxiosError(error)) {
@@ -142,14 +136,4 @@ export function getApiErrorMessage(error: unknown, fallback = 'Something went wr
     return data?.message ?? fallback
   }
   return fallback
-}
-
-/** Simulated network latency for still-mocked service calls, so loading states are visible and real. */
-export const MOCK_DELAY_MS = 500
-
-/** Wraps a mock value in a delayed Promise, standing in for a real request. Used only by modules with no backend yet. */
-export function simulateRequest<T>(value: T, delayMs: number = MOCK_DELAY_MS): Promise<T> {
-  return new Promise((resolve) => {
-    window.setTimeout(() => resolve(value), delayMs)
-  })
 }

@@ -4,6 +4,13 @@ export const applySchema = z.object({
   businessName: z.string().trim().min(2).max(150),
   businessDescription: z.string().trim().max(2000).optional(),
   gstNumber: z.string().trim().max(20).optional(),
+  farmSizeAcres: z.coerce.number().positive().max(100000),
+  primaryCrop: z.string().trim().min(2).max(100),
+  village: z.string().trim().min(2).max(150),
+  bankAccountHolder: z.string().trim().min(2).max(150),
+  bankAccountNumber: z.string().trim().min(6).max(30),
+  bankIfscCode: z.string().trim().toUpperCase().regex(/^[A-Z]{4}0[A-Z0-9]{6}$/, 'Enter a valid IFSC code'),
+  bankName: z.string().trim().min(2).max(150),
 });
 export type ApplyInput = z.infer<typeof applySchema>;
 
@@ -25,10 +32,16 @@ export const updateProfileSchema = z.object({
 });
 export type UpdateSellerProfileInput = z.infer<typeof updateProfileSchema>;
 
-export const reviewApplicationSchema = z.object({
-  decision: z.enum(['APPROVE', 'REJECT']),
-  note: z.string().trim().max(1000).optional(),
-});
+export const reviewApplicationSchema = z
+  .object({
+    decision: z.enum(['APPROVE', 'REJECT']),
+    note: z.string().trim().max(1000).optional(),
+  })
+  .superRefine((value, ctx) => {
+    if (value.decision === 'REJECT' && !value.note) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['note'], message: 'A rejection reason is required.' });
+    }
+  });
 export type ReviewApplicationInput = z.infer<typeof reviewApplicationSchema>;
 
 export const listApplicationsQuerySchema = z.object({
