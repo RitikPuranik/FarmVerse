@@ -157,7 +157,7 @@ export function Sidebar() {
                     text-[#D8B15A]
                   "
                 >
-                  Admin Console
+                  {t('nav.adminConsole')}
                 </p>
                 <p
                   className="
@@ -168,7 +168,7 @@ export function Sidebar() {
                     text-[#F5F2E9]
                   "
                 >
-                  Platform management
+                  {t('nav.platformManagement')}
                 </p>
               </div>
             </div>
@@ -207,7 +207,7 @@ export function Sidebar() {
                     text-[#D8B15A]
                   "
                 >
-                  Sell on FarmVerse
+                  {t('nav.sellOnFarmVerse')}
                 </p>
 
                 <p
@@ -420,7 +420,7 @@ export function Sidebar() {
               )}
             </span>
 
-            <span className="text-[13px] font-semibold">More</span>
+            <span className="text-[13px] font-semibold">{t('nav.more')}</span>
           </button>
 
           {/* DESKTOP MORE POPUP */}
@@ -642,7 +642,7 @@ export function Sidebar() {
               <Menu className="h-[19px] w-[19px]" strokeWidth={2} />
             )}
 
-            <span>More</span>
+            <span>{t('nav.more')}</span>
           </button>
 
           {/* =================================================

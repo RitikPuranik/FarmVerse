@@ -137,7 +137,7 @@ export function Header() {
                   text-[#97948A]
                 "
               >
-                Location
+                {t('common.location')}
               </span>
 
               <span

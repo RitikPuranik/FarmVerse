@@ -297,13 +297,13 @@ export default function HomePage() {
               <br />
 
               <span className="text-[#d8bd55]">
-                Your farm, market and decisions
+                {t('home.heroHighlight')}
               </span>
 
               <br />
 
               <span className="text-[#fbf7ec]">
-                {" "}in one place.
+                {" "}{t('home.heroSuffix')}
               </span>
 
             </h1>
@@ -320,7 +320,7 @@ export default function HomePage() {
               >
                 <ShoppingBag className="h-4 w-4" />
 
-                Explore marketplace
+                {t('home.exploreMarketplace')}
 
                 <ArrowUpRight className="h-3.5 w-3.5 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
               </Link>
@@ -331,7 +331,7 @@ export default function HomePage() {
               >
                 <Sparkles className="h-4 w-4 text-[#d6b841]" />
 
-                Ask FarmVerse AI
+                {t('home.askFarmVerseAI')}
               </Link>
 
             </div>
@@ -421,7 +421,7 @@ export default function HomePage() {
               <div className="relative z-10">
 
                 <p className="font-mono text-[11px] font-bold uppercase tracking-[0.16em] text-[#665c39]">
-                  Field conditions
+                  {t('home.fieldConditions')}
                 </p>
 
                 <div className="mt-2 flex items-end gap-2">
@@ -443,11 +443,11 @@ export default function HomePage() {
                 <div>
 
                   <p className="text-[16px] font-semibold text-[#686347]">
-                    {weather?.location ?? "Your area"}
+                    {weather?.location ?? t('home.yourArea')}
                   </p>
 
                   <p className="mt-0.5 text-[11px] text-[#777154]">
-                    Current field weather
+                    {t('home.currentFieldWeather')}
                   </p>
 
                 </div>
@@ -479,7 +479,7 @@ export default function HomePage() {
               <div>
 
                 <p className="font-mono text-[9px] font-bold uppercase tracking-[0.16em] text-[#898274]">
-                  Mandi / Current rate
+                  {t('home.mandiCurrentRate')}
                 </p>
 
                 <p className="mt-3 text-[14px] font-bold text-[#454238]">
@@ -487,7 +487,7 @@ export default function HomePage() {
                 </p>
 
                 <p className="mt-0.5 text-[10px] text-[#969082]">
-                  {mandiRows[0]?.mandi ?? "Loading mandi data…"}
+                  {mandiRows[0]?.mandi ?? t('home.loadingMandiData')}
                 </p>
 
               </div>
@@ -514,7 +514,7 @@ export default function HomePage() {
               <div className="mt-2 flex items-center gap-2">
 
                 <span className="rounded-full bg-[#e1e9d9] px-2 py-0.5 text-[9px] font-bold text-[#527044]">
-                  per quintal
+                  {t('home.perQuintal')}
                 </span>
 
                 <span className="text-[9px] text-[#928b7d]">
@@ -528,7 +528,7 @@ export default function HomePage() {
             <div className="mt-4 flex items-center justify-between border-t border-[#e5dfd1] pt-2.5">
 
               <span className="text-[9px] text-[#8d877a]">
-                Latest mandi rate
+                {t('home.latestMandiRate')}
               </span>
 
               <ArrowUpRight
@@ -549,11 +549,11 @@ export default function HomePage() {
               <div>
 
                 <p className="font-mono text-[9px] font-bold uppercase tracking-[0.16em] text-[#c8bca8]">
-                  Market signal
+                  {t('home.marketSignal')}
                 </p>
 
                 <h3 className="mt-2 text-[16px] font-semibold text-[#f7f1e4]">
-                  Stable movement
+                  {t('home.stableMovement')}
                 </h3>
 
               </div>
@@ -578,9 +578,9 @@ export default function HomePage() {
               </div>
 
               <div className="mt-2 flex justify-between text-[8px] uppercase tracking-[0.1em] text-[#bfb3a2]">
-                <span>Stable</span>
-                <span>Watch</span>
-                <span>Risk</span>
+                <span>{t('home.stable')}</span>
+                <span>{t('home.watch')}</span>
+                <span>{t('home.risk')}</span>
               </div>
 
             </div>
@@ -588,14 +588,14 @@ export default function HomePage() {
             <div className="mt-4 flex items-end justify-between border-t border-[#756555] pt-3">
 
               <p className="max-w-[150px] text-[9px] leading-3.5 text-[#cfc5b5]">
-                Current market movement based on the latest mandi feed.
+                {t('home.marketMovementDesc')}
               </p>
 
               <Link
                 to="/mandi"
                 className="flex items-center gap-1 text-[9px] font-black uppercase tracking-wider text-[#ddc766]"
               >
-                Open
+                {t('common.open')}
                 <ArrowUpRight className="h-3 w-3" />
               </Link>
 
@@ -617,7 +617,7 @@ export default function HomePage() {
             <div>
 
               <h2 className="mt-1.5 text-[22px] font-extrabold tracking-[-0.03em] text-[#292c23]">
-                All AI Solution
+                {t('home.allAISolution')}
               </h2>
 
             </div>
@@ -626,7 +626,7 @@ export default function HomePage() {
               to="/ai/chat"
               className="hidden items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-[#5c744d] sm:flex"
             >
-              Open AI
+              {t('home.openAI')}
               <ArrowUpRight className="h-3.5 w-3.5" />
             </Link>
 
@@ -697,7 +697,7 @@ export default function HomePage() {
                 <div>
 
                   <h2 className="mt-1.5 text-[22px] font-extrabold tracking-[-0.03em]">
-                    Marketplace categories
+                    {t('home.marketplaceCategories')}
                   </h2>
 
                 </div>
@@ -706,7 +706,7 @@ export default function HomePage() {
                   to="/market"
                   className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-[#5c744d]"
                 >
-                  View all
+                  {t('common.viewAll')}
                   <ChevronRight className="h-3.5 w-3.5" />
                 </Link>
 
@@ -760,7 +760,7 @@ export default function HomePage() {
                 <div>
 
                   <h2 className="mt-1.5 text-[22px] font-extrabold tracking-[-0.03em]">
-                    Recommended Marketplace
+                    {t('home.recommendedMarketplace')}
                   </h2>
 
                 </div>
@@ -769,7 +769,7 @@ export default function HomePage() {
                   to="/market"
                   className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-[#5c744d]"
                 >
-                  Explore
+                  {t('home.explore')}
                   <ArrowUpRight className="h-3.5 w-3.5" />
                 </Link>
 
@@ -805,7 +805,7 @@ export default function HomePage() {
                       <div className="absolute left-4 top-4 z-10">
 
                         <span className="rounded-full border border-white/40 bg-white/90 px-2.5 py-1 text-[8px] font-black uppercase tracking-[0.13em] text-[#5d7652] shadow-sm backdrop-blur-sm">
-                          Available
+                          {t('common.available')}
                         </span>
 
                       </div>
@@ -860,7 +860,7 @@ export default function HomePage() {
                           </p>
 
                           <p className="mt-0.5 text-[9px] font-medium text-[#999184]">
-                            per {product.unit}
+                            {t('common.per')} {product.unit}
                           </p>
 
                         </div>
@@ -907,11 +907,11 @@ export default function HomePage() {
                 <div>
 
                   <h2 className="text-[17px] font-extrabold text-[#292b24]">
-                    Recent Orders
+                    {t('home.recentOrders')}
                   </h2>
 
                   <p className="mt-1 text-[10px] text-[#918b7d]">
-                    Your latest marketplace orders
+                    {t('home.yourLatestOrders')}
                   </p>
 
                 </div>
@@ -942,11 +942,11 @@ export default function HomePage() {
                       </div>
 
                       <p className="mt-3 text-[11px] font-semibold text-[#777164]">
-                        No orders yet
+                        {t('home.noOrdersYet')}
                       </p>
 
                       <p className="mt-1 text-[9px] text-[#aaa393]">
-                        Your orders will appear here.
+                        {t('home.ordersWillAppearHere')}
                       </p>
 
                     </div>
@@ -1018,7 +1018,7 @@ export default function HomePage() {
                 to="/orders"
                 className="mt-4 flex shrink-0 items-center justify-center rounded-xl border border-[#d8d0bf] py-2.5 text-[10px] font-black uppercase tracking-[0.15em] text-[#5c744d] transition-colors hover:bg-[#f2eee4]"
               >
-                View complete order history
+                {t('home.viewCompleteOrderHistory')}
               </Link>
 
             </section>
@@ -1037,11 +1037,11 @@ export default function HomePage() {
                 <div>
 
                   <h2 className="text-[17px] font-extrabold text-[#f7f1e4]">
-                    Mandi prices
+                    {t('home.mandiPricesTitle')}
                   </h2>
 
                   <p className="mt-1 text-[10px] text-[#c1b5a4]">
-                    Top market rates
+                    {t('home.topMarketRates')}
                   </p>
 
                 </div>
@@ -1072,7 +1072,7 @@ export default function HomePage() {
                       </div>
 
                       <p className="mt-3 text-[11px] font-semibold text-[#c1b5a4]">
-                        No mandi data
+                        {t('home.noMandiData')}
                       </p>
 
                     </div>
@@ -1131,7 +1131,7 @@ export default function HomePage() {
                 to="/mandi"
                 className="mt-4 flex shrink-0 items-center justify-center gap-1 rounded-xl border border-[#756555] py-2.5 text-[10px] font-black uppercase tracking-[0.15em] text-[#ddc766] transition-colors hover:bg-[#62503f]"
               >
-                Open full market
+                {t('home.openFullMarket')}
                 <ArrowUpRight className="h-3 w-3" />
               </Link>
 

@@ -65,7 +65,7 @@ export function LanguageSwitcher({ className }: { className?: string }) {
           ))}
           <div className="my-1 border-t border-ink-100" />
           <p className="px-3 pt-1 pb-1 text-xs font-semibold uppercase tracking-wide text-ink-400">
-            Coming soon
+            {t('common.comingSoon')}
           </p>
           {plannedLanguages.map((option) => (
             <div
