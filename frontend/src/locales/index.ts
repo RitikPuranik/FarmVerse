@@ -11,10 +11,10 @@ export const translations: Partial<Record<string, TranslationShape>> = {
 }
 
 const loaders: Record<string, () => Promise<{ default: TranslationShape }>> = {
-  hi: () => import('./hi.json'),
-  mr: () => import('./mr.json'),
-  pa: () => import('./pa.json'),
-  gu: () => import('./gu.json'),
+  hi: () => import('./hi.json') as unknown as Promise<{ default: TranslationShape }>,
+  mr: () => import('./mr.json') as unknown as Promise<{ default: TranslationShape }>,
+  pa: () => import('./pa.json') as unknown as Promise<{ default: TranslationShape }>,
+  gu: () => import('./gu.json') as unknown as Promise<{ default: TranslationShape }>,
 }
 
 /** Fetches and caches a language's translation file the first time it's
