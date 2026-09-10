@@ -17,6 +17,7 @@ import {
 } from 'lucide-react'
 import { useLand } from '@/context/LandContext'
 import { useAuth } from '@/context/AuthContext'
+import { useLanguage } from '@/context/LanguageContext'
 import { formatINR } from '@/utils/format'
 import { cn } from '@/utils/cn'
 import type { BackendLandDealType, LandQueryParams } from '@/services/landService'
@@ -24,6 +25,7 @@ import type { BackendLandDealType, LandQueryParams } from '@/services/landServic
 export default function LandMarketplacePage() {
   const { listings, fetchListings, isLoading, error, meta } = useLand()
   const { isSeller } = useAuth()
+  const { t } = useLanguage()
 
   const [search, setSearch] = useState('')
   const [dealType, setDealType] = useState<BackendLandDealType | 'ALL'>('ALL')
@@ -72,6 +74,12 @@ export default function LandMarketplacePage() {
 
   const hasActiveFilters = Boolean(minPrice || maxPrice || minArea || maxArea)
 
+  const dealTypeLabels: Record<string, string> = {
+    ALL: t('land.allPlots'),
+    SALE: t('land.forSale'),
+    LEASE: t('land.forLease'),
+  }
+
   return (
     <div className="mx-auto max-w-6xl px-4 py-5 md:px-6 md:py-8">
       {/* =================================================
@@ -81,15 +89,15 @@ export default function LandMarketplacePage() {
       <section className="relative mb-6 overflow-hidden rounded-[28px] bg-[#27351d] px-5 py-7 text-[#fbf7ec] sm:px-8 sm:py-8 lg:px-10 lg:py-9">
         <div className="relative z-10 max-w-2xl">
           <span className="inline-flex items-center gap-1.5 rounded-full border border-[#68765e] bg-[#303f26] px-3 py-1 text-[10px] font-black uppercase tracking-[0.1em] text-[#d6b841]">
-            <Sparkles className="h-3.5 w-3.5" /> Direct Verified Listings
+            <Sparkles className="h-3.5 w-3.5" /> {t('land.directVerifiedListings')}
           </span>
 
           <h1 className="mt-3 text-[1.85rem] font-semibold leading-[1.12] tracking-[-0.02em] text-[#fbf7ec] sm:text-[2.5rem] sm:leading-[1.08] sm:tracking-[-0.03em]">
-            Agricultural <span className="text-[#d8bd55]">Land</span> Marketplace
+            {t('land.title').replace(t('land.titleHighlight'), '')} <span className="text-[#d8bd55]">{t('land.titleHighlight')}</span> {t('land.title').split(t('land.titleHighlight')).pop()}
           </h1>
 
           <p className="mt-3 max-w-xl text-[13px] leading-6 text-[#d5d9d0] sm:text-[14px]">
-            Buy, sell, or lease verified fertile farmland, orchards, and agricultural plots across India with direct seller contact.
+            {t('land.subtitle')}
           </p>
 
           <div className="mt-5 flex flex-wrap items-center gap-3">
@@ -99,7 +107,7 @@ export default function LandMarketplacePage() {
                 className="group flex items-center gap-2 rounded-full bg-[#d6b841] px-5 py-3 text-[11px] font-black uppercase tracking-[0.08em] text-[#262c1d] transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#e0c64d]"
               >
                 <Plus className="h-4 w-4" />
-                Post Land Listing
+                {t('land.postLandListing')}
                 <ArrowUpRight className="h-3.5 w-3.5 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
               </Link>
             )}
@@ -109,7 +117,7 @@ export default function LandMarketplacePage() {
               className="flex items-center gap-2 rounded-full border border-[#68765e] bg-[#303f26] px-5 py-3 text-[11px] font-bold uppercase tracking-[0.08em] text-[#f0ede3] transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#394a2d]"
             >
               <CalendarCheck className="h-4 w-4 text-[#d6b841]" />
-              My Visit Requests
+              {t('land.myVisitRequests')}
             </Link>
           </div>
         </div>
@@ -132,7 +140,7 @@ export default function LandMarketplacePage() {
             <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[#9EA298]" aria-hidden="true" />
             <input
               type="text"
-              placeholder="Search land by location, title, or description..."
+              placeholder={t('land.searchPlaceholder')}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="h-9 w-full rounded-lg border border-transparent bg-[#FAFAF7] pl-10 pr-3 text-[13px] font-medium text-[#1E281A] outline-none placeholder:text-[#9EA298] focus:border-[#9EAA8E]"
@@ -144,7 +152,7 @@ export default function LandMarketplacePage() {
               type="submit"
               className="inline-flex h-9 items-center gap-1.5 rounded-lg bg-[#25321F] px-4 text-[12px] font-extrabold text-white transition-colors hover:bg-[#324029]"
             >
-              Search
+              {t('common.search')}
             </button>
 
             <button
@@ -158,7 +166,7 @@ export default function LandMarketplacePage() {
               )}
             >
               <SlidersHorizontal className="h-3.5 w-3.5" />
-              Filters
+              {t('common.filters')}
               {hasActiveFilters && (
                 <span className="flex h-4 min-w-4 items-center justify-center rounded-full bg-[#D5B957] px-1 text-[8px] font-black text-[#1B2516]">
                   !
@@ -181,7 +189,7 @@ export default function LandMarketplacePage() {
                   dealType === type ? 'bg-white text-[#1D2819] shadow-sm' : 'text-[#858B7D] hover:text-[#1D2819]',
                 )}
               >
-                {type === 'ALL' ? 'All Plots' : type === 'SALE' ? 'For Sale' : 'For Lease'}
+                {dealTypeLabels[type]}
               </button>
             ))}
           </div>
@@ -189,18 +197,18 @@ export default function LandMarketplacePage() {
           <div className="flex items-center gap-2">
             <span className="hidden items-center gap-1 text-[10px] font-extrabold uppercase tracking-[0.12em] text-[#858B7D] sm:flex">
               <ArrowUpDown className="h-3.5 w-3.5" />
-              Sort by
+              {t('common.sortBy')}
             </span>
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as LandQueryParams['sortBy'])}
               className="h-9 min-w-[160px] rounded-lg border border-[#DDDED6] bg-[#FAFAF7] px-3 text-[12px] font-extrabold text-[#2C3725] outline-none transition-colors focus:border-[#9EAA8E]"
             >
-              <option value="newest">Newest First</option>
-              <option value="price_asc">Price: Low to High</option>
-              <option value="price_desc">Price: High to Low</option>
-              <option value="area_asc">Area: Low to High</option>
-              <option value="area_desc">Area: High to Low</option>
+              <option value="newest">{t('land.newestFirst')}</option>
+              <option value="price_asc">{t('land.priceLowToHigh')}</option>
+              <option value="price_desc">{t('land.priceHighToLow')}</option>
+              <option value="area_asc">{t('land.areaLowToHigh')}</option>
+              <option value="area_desc">{t('land.areaHighToLow')}</option>
             </select>
           </div>
         </div>
@@ -212,7 +220,7 @@ export default function LandMarketplacePage() {
               <div className="flex items-center gap-2">
                 <Filter className="h-4 w-4 text-[#D5B957]" />
                 <span className="text-[11px] font-extrabold uppercase tracking-[0.14em] text-[#E5E8DF]">
-                  Price &amp; area range
+                  {t('land.priceAndAreaRange')}
                 </span>
               </div>
               <button
@@ -220,13 +228,13 @@ export default function LandMarketplacePage() {
                 onClick={resetFilters}
                 className="text-[11px] font-bold text-[#B2BFA7] transition-colors hover:text-white"
               >
-                Reset
+                {t('common.reset')}
               </button>
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
               <label className="flex flex-col">
-                <span className="mb-1.5 text-[11px] font-medium text-[#A0AC96]">Min price</span>
+                <span className="mb-1.5 text-[11px] font-medium text-[#A0AC96]">{t('land.minPrice')}</span>
                 <div className="relative">
                   <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[12px] font-bold text-[#6D7964]">₹</span>
                   <input
@@ -241,7 +249,7 @@ export default function LandMarketplacePage() {
               </label>
 
               <label className="flex flex-col">
-                <span className="mb-1.5 text-[11px] font-medium text-[#A0AC96]">Max price</span>
+                <span className="mb-1.5 text-[11px] font-medium text-[#A0AC96]">{t('land.maxPrice')}</span>
                 <div className="relative">
                   <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[12px] font-bold text-[#6D7964]">₹</span>
                   <input
@@ -256,7 +264,7 @@ export default function LandMarketplacePage() {
               </label>
 
               <label className="flex flex-col">
-                <span className="mb-1.5 text-[11px] font-medium text-[#A0AC96]">Min area (acres)</span>
+                <span className="mb-1.5 text-[11px] font-medium text-[#A0AC96]">{t('land.minAreaAcres')}</span>
                 <input
                   type="number"
                   min="0"
@@ -268,7 +276,7 @@ export default function LandMarketplacePage() {
               </label>
 
               <label className="flex flex-col">
-                <span className="mb-1.5 text-[11px] font-medium text-[#A0AC96]">Max area (acres)</span>
+                <span className="mb-1.5 text-[11px] font-medium text-[#A0AC96]">{t('land.maxAreaAcres')}</span>
                 <input
                   type="number"
                   min="0"
@@ -286,7 +294,7 @@ export default function LandMarketplacePage() {
                 onClick={loadData}
                 className="inline-flex h-10 items-center justify-center gap-1.5 rounded-lg bg-[#D5B957] px-5 text-[12px] font-black uppercase tracking-[0.06em] text-[#1B2516] transition-colors hover:bg-[#e0c64d]"
               >
-                Apply Filters
+                {t('land.applyFilters')}
               </button>
             </div>
           </div>
@@ -301,7 +309,7 @@ export default function LandMarketplacePage() {
         <div className="mb-6 flex items-center justify-between rounded-xl border border-[#F3D3CE] bg-[#FDF1EF] p-4 text-xs text-[#B3261E]">
           <span>{error}</span>
           <button type="button" onClick={loadData} className="flex items-center gap-1 font-semibold underline">
-            <RefreshCw className="h-3.5 w-3.5" /> Retry
+            <RefreshCw className="h-3.5 w-3.5" /> {t('common.retry')}
           </button>
         </div>
       )}
@@ -322,20 +330,20 @@ export default function LandMarketplacePage() {
           <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#F3F5EF] text-[#5c744d]">
             <MapPin className="h-7 w-7" />
           </div>
-          <h3 className="text-base font-bold text-[#1D2819]">No land listings found</h3>
-          <p className="mt-1 text-xs text-[#6C7567]">Try loosening your search filters or check back soon for new plots.</p>
+          <h3 className="text-base font-bold text-[#1D2819]">{t('land.noListingsFound')}</h3>
+          <p className="mt-1 text-xs text-[#6C7567]">{t('land.noListingsHint')}</p>
           <button
             type="button"
             onClick={resetFilters}
             className="mt-4 rounded-full bg-[#25321F] px-4 py-2 text-xs font-extrabold text-white shadow transition-colors hover:bg-[#324029]"
           >
-            Clear Filters
+            {t('land.clearFilters')}
           </button>
         </div>
       ) : (
         <>
           <div className="mb-3 text-xs font-medium text-[#6C7567]">
-            Showing <span className="font-extrabold text-[#1D2819]">{listings.length}</span> {meta ? `of ${meta.totalItems}` : ''} land listings
+            {t('common.showing')} <span className="font-extrabold text-[#1D2819]">{listings.length}</span> {meta ? `${t('common.of')} ${meta.totalItems}` : ''} {t('land.showingListings')}
           </div>
 
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -372,7 +380,7 @@ export default function LandMarketplacePage() {
                           land.dealType === 'SALE' ? 'bg-[#3E6B3F]' : 'bg-[#B8862E]',
                         )}
                       >
-                        For {land.dealType === 'SALE' ? 'Sale' : 'Lease'}
+                        {land.dealType === 'SALE' ? t('land.forSale') : t('land.forLease')}
                       </span>
                     </div>
 
@@ -390,7 +398,7 @@ export default function LandMarketplacePage() {
                       <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
                         <span className="flex items-center gap-1 rounded-md bg-[#F3F5EF] px-2 py-0.5 text-[11px] font-bold text-[#435537]">
                           <Ruler className="h-3 w-3" />
-                          {areaNum} Acres
+                          {areaNum} {t('land.acres')}
                         </span>
                         {land.soilType && (
                           <span className="flex items-center gap-1 rounded-md bg-[#F5EFE0] px-2 py-0.5 text-[11px] font-medium text-[#8A6A2E]">
@@ -412,15 +420,15 @@ export default function LandMarketplacePage() {
                   <div className="mt-3 flex items-end justify-between border-t border-[#F0F1EA] pt-3">
                     <div>
                       <p className="text-[9px] font-extrabold uppercase tracking-[0.1em] text-[#9EA298]">
-                        {land.dealType === 'LEASE' ? 'Annual Rent' : 'Total Price'}
+                        {land.dealType === 'LEASE' ? t('land.annualRent') : t('land.totalPrice')}
                       </p>
                       <p className="text-[17px] font-black text-[#1D2819]">
                         {formatINR(priceNum)}
-                        {land.dealType === 'LEASE' && <span className="text-xs font-medium text-[#9EA298]">/yr</span>}
+                        {land.dealType === 'LEASE' && <span className="text-xs font-medium text-[#9EA298]">{t('land.perYear')}</span>}
                       </p>
                     </div>
                     <span className="flex items-center gap-1 rounded-lg bg-[#F3F5EF] px-3 py-1.5 text-[11px] font-extrabold text-[#5c744d] transition-colors group-hover:bg-[#25321F] group-hover:text-white">
-                      View
+                      {t('land.view')}
                       <ArrowUpRight className="h-3.5 w-3.5 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
                     </span>
                   </div>
