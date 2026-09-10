@@ -1,19 +1,26 @@
 import { Navigate, Outlet, useSearchParams } from 'react-router-dom'
 import { useAuth } from '@/context/AuthContext'
 
-/**
- * Wraps the auth pages (login, register, forgot/reset password, OTP).
- * If a session is already active — including one just restored from a
- * stored refresh token on app load — there's no reason to show a login
- * form again, so this sends the person straight into the app instead.
- */
 export function GuestOnly() {
-  const { isAuthenticated } = useAuth()
+  const { isAuthenticated, user } = useAuth()
   const [searchParams] = useSearchParams()
 
   if (isAuthenticated) {
-    const next = searchParams.get('next') ?? '/home'
-    return <Navigate to={next} replace />
+    const next = searchParams.get('next')
+    const requested = next && next.startsWith('/') && !next.startsWith('//') ? next : null
+
+    if (user?.roles.includes('admin')) {
+      return <Navigate to={requested?.startsWith('/admin') ? requested : '/admin'} replace />
+    }
+
+    if (user?.roles.includes('seller')) {
+      return <Navigate to={requested?.startsWith('/seller') ? requested : '/home'} replace />
+    }
+
+    const safeNext = requested && !requested.startsWith('/admin') && !requested.startsWith('/seller')
+      ? requested
+      : '/home'
+    return <Navigate to={safeNext} replace />
   }
 
   return <Outlet />
