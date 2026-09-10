@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Loader2, MapPin, PackageX, Search, Star, Tractor } from 'lucide-react'
 import { machineryService, type MachineryCategory, type MachineryListing } from '@/services/machineryService'
+import { useLanguage } from '@/context/LanguageContext'
 import { formatINR } from '@/utils/format'
 import { cn } from '@/utils/cn'
 
@@ -15,6 +16,7 @@ function useDebouncedValue<T>(value: T, delayMs: number): T {
 }
 
 export default function MachineryMarketplacePage() {
+  const { t } = useLanguage()
   const [search, setSearch] = useState('')
   const debouncedSearch = useDebouncedValue(search, 300)
   const [categorySlug, setCategorySlug] = useState('')
@@ -44,7 +46,7 @@ export default function MachineryMarketplacePage() {
         if (!cancelled) setListings(res.items)
       })
       .catch(() => {
-        if (!cancelled) setError('Could not load machinery listings. Please try again.')
+        if (!cancelled) setError(t('machinery.couldNotLoad'))
       })
       .finally(() => {
         if (!cancelled) setIsLoading(false)
@@ -52,12 +54,12 @@ export default function MachineryMarketplacePage() {
     return () => {
       cancelled = true
     }
-  }, [debouncedSearch, categorySlug, sortBy])
+  }, [debouncedSearch, categorySlug, sortBy, t])
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-5 md:px-6 md:py-8">
-      <h1 className="mb-1 text-xl">Machinery Rental</h1>
-      <p className="mb-5 text-sm text-ink-500">Tractors, harvesters and tools for rent nearby.</p>
+      <h1 className="mb-1 text-xl">{t('machinery.title')}</h1>
+      <p className="mb-5 text-sm text-ink-500">{t('machinery.subtitle')}</p>
 
       <div className="mb-5 flex flex-col gap-2 sm:flex-row">
         <div className="relative flex-1">
@@ -65,7 +67,7 @@ export default function MachineryMarketplacePage() {
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search tractors, harvesters, tools…"
+            placeholder={t('machinery.searchPlaceholder')}
             className="h-11 w-full rounded-xl border border-ink-200 bg-surface pl-9 pr-3 text-sm text-ink-900 placeholder:text-ink-400 focus:border-brand-400"
           />
         </div>
@@ -74,7 +76,7 @@ export default function MachineryMarketplacePage() {
           onChange={(e) => setCategorySlug(e.target.value)}
           className="h-11 rounded-xl border border-ink-200 bg-surface px-3 text-sm text-ink-900 focus:border-brand-400"
         >
-          <option value="">All categories</option>
+          <option value="">{t('machinery.allCategories')}</option>
           {categories.map((c) => (
             <option key={c.id} value={c.slug}>
               {c.name}
@@ -86,10 +88,10 @@ export default function MachineryMarketplacePage() {
           onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
           className="h-11 rounded-xl border border-ink-200 bg-surface px-3 text-sm text-ink-900 focus:border-brand-400"
         >
-          <option value="newest">Newest</option>
-          <option value="price_asc">Price: Low to High</option>
-          <option value="price_desc">Price: High to Low</option>
-          <option value="rating">Highest Rated</option>
+          <option value="newest">{t('machinery.newest')}</option>
+          <option value="price_asc">{t('machinery.priceLowToHigh')}</option>
+          <option value="price_desc">{t('machinery.priceHighToLow')}</option>
+          <option value="rating">{t('machinery.highestRated')}</option>
         </select>
       </div>
 
@@ -102,8 +104,8 @@ export default function MachineryMarketplacePage() {
       ) : listings.length === 0 ? (
         <div className="flex min-h-[240px] flex-col items-center justify-center rounded-2xl border border-ink-100 bg-surface px-6 py-12 text-center">
           <PackageX className="mb-3 h-10 w-10 text-ink-300" aria-hidden="true" />
-          <p className="text-sm font-semibold text-ink-800">No machinery found</p>
-          <p className="mt-1 text-xs text-ink-500">Try a different search or category.</p>
+          <p className="text-sm font-semibold text-ink-800">{t('machinery.noMachineryFound')}</p>
+          <p className="mt-1 text-xs text-ink-500">{t('machinery.noMachineryHint')}</p>
         </div>
       ) : (
         <div className="grid gap-4 sm:grid-cols-2">
@@ -124,7 +126,7 @@ export default function MachineryMarketplacePage() {
                     m.available ? 'bg-brand-50 text-brand-700' : 'bg-danger-50 text-danger-500',
                   )}
                 >
-                  {m.available ? 'Available' : 'Inactive'}
+                  {m.available ? t('common.available') : t('common.inactive')}
                 </span>
               </div>
               <p className="mt-1 flex items-center gap-1 text-xs text-ink-500">
@@ -136,7 +138,7 @@ export default function MachineryMarketplacePage() {
                 {m.rating.toFixed(1)} ({m.reviewCount})
               </p>
               <p className="mt-2 text-base font-bold text-ink-900">
-                {formatINR(m.pricePerDay)} <span className="text-xs font-normal text-ink-400">/ day</span>
+                {formatINR(m.pricePerDay)} <span className="text-xs font-normal text-ink-400">{t('common.perDay')}</span>
               </p>
             </Link>
           ))}

@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { Bell, Heart, History, Loader2, Search } from 'lucide-react'
 import { SelectField } from '@/components/common/FormField'
 import { useMandi } from '@/context/MandiContext'
+import { useLanguage } from '@/context/LanguageContext'
 import { mandiService } from '@/services/mandiService'
 import { formatDateLabel, formatINR } from '@/utils/format'
 import { cn } from '@/utils/cn'
@@ -28,6 +29,7 @@ function unwrapMeta(res: any): any {
 }
 
 export default function MandiPage() {
+  const { t } = useLanguage()
   const [states, setStates] = useState<string[]>([])
   const [districts, setDistricts] = useState<string[]>([])
   const [mandis, setMandis] = useState<{ id: string; name: string }[]>([])
@@ -116,7 +118,7 @@ export default function MandiPage() {
     setCurrentPage(1)
     setHasMore(false)
 
-    const t = setTimeout(() => {
+    const timer = setTimeout(() => {
       mandiService.getPrices(params)
         .then((res) => {
           const items = unwrapArray(res)
@@ -141,7 +143,7 @@ export default function MandiPage() {
         .finally(() => setLoading(false))
     }, 300)
 
-    return () => clearTimeout(t)
+    return () => clearTimeout(timer)
   }, [mandiId, exactDate, crops, state, district]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // 5. Load more prices (infinite scroll)
@@ -191,46 +193,46 @@ export default function MandiPage() {
   return (
     <div className="mx-auto max-w-4xl px-4 py-5 md:px-6 md:py-8">
       <div className="mb-5 flex items-center justify-between">
-        <h1 className="text-xl">Mandi Prices</h1>
+        <h1 className="text-xl">{t('mandi.title')}</h1>
         <div className="flex gap-2">
           <Link to="/mandi/favorites" className="flex items-center gap-1 rounded-full border border-ink-100 px-3 py-1.5 text-xs font-medium text-ink-600">
             <Heart className="h-3.5 w-3.5" aria-hidden="true" />
-            Favorites
+            {t('mandi.favorites')}
           </Link>
           <Link to="/mandi/alerts" className="flex items-center gap-1 rounded-full border border-ink-100 px-3 py-1.5 text-xs font-medium text-ink-600">
             <Bell className="h-3.5 w-3.5" aria-hidden="true" />
-            Alerts
+            {t('mandi.alerts')}
           </Link>
         </div>
       </div>
 
       <div className="mb-5 grid grid-cols-2 gap-3 rounded-2xl border border-ink-100 bg-surface p-4 md:grid-cols-5">
-        <SelectField id="state" label="State" value={state} onChange={(e) => setState(e.target.value)}>
-          <option value="">All States</option>
+        <SelectField id="state" label={t('mandi.stateLabel')} value={state} onChange={(e) => setState(e.target.value)}>
+          <option value="">{t('mandi.allStates')}</option>
           {states.map((s) => (
             <option key={s} value={s}>{s}</option>
           ))}
         </SelectField>
-        <SelectField id="district" label="District" value={district} onChange={(e) => setDistrict(e.target.value)} disabled={!state}>
-          <option value="">{state ? 'All Districts' : 'Select State First'}</option>
+        <SelectField id="district" label={t('mandi.districtLabel')} value={district} onChange={(e) => setDistrict(e.target.value)} disabled={!state}>
+          <option value="">{state ? t('mandi.allDistricts') : t('mandi.selectStateFirst')}</option>
           {districts.map((d) => (
             <option key={d} value={d}>{d}</option>
           ))}
         </SelectField>
-        <SelectField id="mandi" label="Mandi" value={mandiId} onChange={(e) => setMandiId(e.target.value)} disabled={!district}>
-          <option value="">{district ? 'Select a Mandi' : 'Select District First'}</option>
+        <SelectField id="mandi" label={t('mandi.mandiLabel')} value={mandiId} onChange={(e) => setMandiId(e.target.value)} disabled={!district}>
+          <option value="">{district ? t('mandi.selectAMandi') : t('mandi.selectDistrictFirst')}</option>
           {mandis.map((m) => (
             <option key={m.id} value={m.id}>{m.name}</option>
           ))}
         </SelectField>
-        <SelectField id="crop" label="Crop" value={cropId} onChange={(e) => setCropId(e.target.value)}>
-          <option value="">All Crops</option>
+        <SelectField id="crop" label={t('mandi.cropLabel')} value={cropId} onChange={(e) => setCropId(e.target.value)}>
+          <option value="">{t('mandi.allCrops')}</option>
           {(mandiId ? availableCrops : crops).map((c) => (
             <option key={c.id} value={c.id}>{c.name}</option>
           ))}
         </SelectField>
         <div className="flex flex-col gap-1.5">
-          <label htmlFor="exactDate" className="text-sm font-medium text-ink-700">Date (Optional)</label>
+          <label htmlFor="exactDate" className="text-sm font-medium text-ink-700">{t('mandi.dateOptional')}</label>
           <input
             type="date"
             id="exactDate"
@@ -245,7 +247,7 @@ export default function MandiPage() {
       {!mandiId && !loading && (
         <div className="flex flex-col items-center rounded-2xl border border-ink-100 bg-surface p-8 text-center text-ink-500">
           <Search className="mb-2 h-8 w-8 text-ink-300" />
-          Select a State → District → Mandi to view live prices
+          {t('mandi.selectMandiPrompt')}
         </div>
       )}
 
@@ -266,7 +268,7 @@ export default function MandiPage() {
               {!loading && mandiId && displayedPrices.length === 0 && (
                 <div className="flex flex-col items-center rounded-2xl border border-ink-100 bg-surface p-8 text-center text-ink-500">
                   <Search className="mb-2 h-8 w-8 text-ink-300" />
-                  No prices found for the selected filters.
+                  {t('mandi.noPricesFound')}
                 </div>
               )}
 
@@ -277,12 +279,12 @@ export default function MandiPage() {
           return (
             <div key={`${row.id}-${idx}`} className="flex items-center justify-between rounded-2xl border border-ink-100 bg-surface p-4">
               <div>
-                <p className="text-sm font-semibold text-ink-900">{row.crop?.name || 'Unknown Crop'}</p>
+                <p className="text-sm font-semibold text-ink-900">{row.crop?.name || t('mandi.unknownCrop')}</p>
                 <p className="text-xs text-ink-400">
-                  {row.mandi?.name || 'Unknown Mandi'} · {row.mandi?.district}, {row.mandi?.state} · {row.variety || ''} · {formatDateLabel(row.priceDate)}
+                  {row.mandi?.name || t('mandi.unknownMandi')} · {row.mandi?.district}, {row.mandi?.state} · {row.variety || ''} · {formatDateLabel(row.priceDate)}
                 </p>
                 <p className="mt-1 text-[11px] text-ink-400">
-                  Range: {formatINR(row.minPrice)} – {formatINR(row.maxPrice)}
+                  {t('common.range')}: {formatINR(row.minPrice)} – {formatINR(row.maxPrice)}
                 </p>
               </div>
               <div className="flex items-center gap-3">
@@ -294,7 +296,7 @@ export default function MandiPage() {
                       className="flex items-center justify-end gap-1 text-[11px] font-medium text-brand-600 hover:underline"
                     >
                       <History className="h-3 w-3" aria-hidden="true" />
-                      History
+                      {t('mandi.history')}
                     </Link>
                   )}
                 </div>
@@ -303,7 +305,7 @@ export default function MandiPage() {
                     type="button"
                     onClick={() => toggleFavorite(mId)}
                     aria-pressed={favorited}
-                    aria-label={favorited ? 'Remove from favorites' : 'Add to favorites'}
+                    aria-label={favorited ? t('mandi.removeFromFavorites') : t('mandi.addToFavorites')}
                     className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-ink-100"
                   >
                     <Heart className={cn('h-4 w-4', favorited ? 'fill-danger-500 text-danger-500' : 'text-ink-400')} aria-hidden="true" />
@@ -327,7 +329,7 @@ export default function MandiPage() {
         {/* End of results */}
         {!loading && !hasMore && displayedPrices.length > 0 && (
           <p className="py-3 text-center text-xs text-ink-400">
-            Showing {displayedPrices.length} results
+            {t('mandi.showingResults', { count: String(displayedPrices.length) })}
           </p>
         )}
             </>

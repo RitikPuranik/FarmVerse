@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { ShoppingCart, Sparkles, Sprout, Star } from 'lucide-react'
 import { seedService, type Seed } from '@/services/seedService'
 import { useSeedCart } from '@/context/SeedCartContext'
+import { useLanguage } from '@/context/LanguageContext'
 import { getApiErrorMessage } from '@/services/api'
 import { formatINR } from '@/utils/format'
 
@@ -11,6 +12,7 @@ export default function SeedStorePage() {
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState('')
   const { addToCart, itemCount } = useSeedCart()
+  const { t } = useLanguage()
 
   useEffect(() => {
     let cancelled = false
@@ -21,7 +23,7 @@ export default function SeedStorePage() {
         if (!cancelled) setSeeds(items)
       })
       .catch((err) => {
-        if (!cancelled) setError(getApiErrorMessage(err, 'Could not load the seed store.'))
+        if (!cancelled) setError(getApiErrorMessage(err, t('machinery.couldNotLoad')))
       })
       .finally(() => {
         if (!cancelled) setIsLoading(false)
@@ -29,7 +31,7 @@ export default function SeedStorePage() {
     return () => {
       cancelled = true
     }
-  }, [])
+  }, [t])
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-5 md:px-6 md:py-8">
@@ -39,8 +41,8 @@ export default function SeedStorePage() {
             <Sprout className="h-5.5 w-5.5" aria-hidden="true" />
           </span>
           <div>
-            <h1 className="text-xl">Seed Store</h1>
-            <p className="text-xs text-ink-500">Certified seeds, sourced from verified sellers</p>
+            <h1 className="text-xl">{t('seeds.title')}</h1>
+            <p className="text-xs text-ink-500">{t('seeds.subtitle')}</p>
           </div>
         </div>
         <Link
@@ -62,9 +64,9 @@ export default function SeedStorePage() {
       >
         <span className="flex items-center gap-2 text-sm font-semibold">
           <Sparkles className="h-4.5 w-4.5" aria-hidden="true" />
-          Not sure which seed to buy? Ask the AI Seed Advisor
+          {t('seeds.aiAdvisorBanner')}
         </span>
-        <span className="text-xs font-semibold">Open →</span>
+        <span className="text-xs font-semibold">{t('seeds.openAdvisor')}</span>
       </Link>
 
       {error && <p className="mb-4 text-sm font-medium text-danger-500">{error}</p>}
@@ -76,7 +78,7 @@ export default function SeedStorePage() {
           ))}
         </div>
       ) : seeds.length === 0 ? (
-        <p className="py-16 text-center text-sm text-ink-500">No seeds listed yet — check back soon.</p>
+        <p className="py-16 text-center text-sm text-ink-500">{t('seeds.noSeedsYet')}</p>
       ) : (
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
           {seeds.map((seed) => (
@@ -102,7 +104,7 @@ export default function SeedStorePage() {
                 disabled={seed.stock <= 0}
                 className="mt-2 w-full rounded-full bg-brand-50 py-1.5 text-xs font-semibold text-brand-700 hover:bg-brand-100 disabled:cursor-not-allowed disabled:opacity-50"
               >
-                {seed.stock <= 0 ? 'Out of stock' : 'Add to Seed Cart'}
+                {seed.stock <= 0 ? t('seeds.outOfStock') : t('seeds.addToSeedCart')}
               </button>
             </div>
           ))}

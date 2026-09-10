@@ -14,6 +14,7 @@ import {
   RefreshCw,
 } from 'lucide-react'
 import { weatherService } from '@/services/weatherService'
+import { useLanguage } from '@/context/LanguageContext'
 
 // Helper to map WMO weather codes to Lucide icons
 function getWeatherIcon(code: number) {
@@ -34,10 +35,11 @@ function isClearCode(code: number) {
 }
 
 export default function WeatherPage() {
+  const { t, language } = useLanguage()
   const [data, setData] = useState<any>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
-  const [locationName, setLocationName] = useState('Your Location')
+  const [locationName, setLocationName] = useState(t('weather.yourLocation'))
 
   useEffect(() => {
     async function fetchWeather(lat: number, lng: number) {
@@ -47,7 +49,7 @@ export default function WeatherPage() {
         setData(res.data || res)
       } catch (err) {
         console.error('Failed to fetch weather', err)
-        setError('Failed to load weather data. Please try again.')
+        setError(t('weather.failedToLoad'))
       } finally {
         setLoading(false)
       }
@@ -61,15 +63,15 @@ export default function WeatherPage() {
         (err) => {
           console.warn('Geolocation blocked or failed', err)
           // Fallback to New Delhi if denied
-          setLocationName('New Delhi (Fallback)')
+          setLocationName(t('weather.fallbackLocation'))
           fetchWeather(28.6139, 77.209)
         },
       )
     } else {
-      setLocationName('New Delhi (Fallback)')
+      setLocationName(t('weather.fallbackLocation'))
       fetchWeather(28.6139, 77.209)
     }
-  }, [])
+  }, [t])
 
   if (loading) {
     return (
@@ -82,7 +84,7 @@ export default function WeatherPage() {
   if (error || !data) {
     return (
       <div className="mx-auto flex min-h-[60vh] max-w-3xl items-center justify-center bg-[#f4f0e6] px-4 text-center text-[#8a513d]">
-        {error || 'Unable to load weather.'}
+        {error || t('weather.unableToLoad')}
       </div>
     )
   }
@@ -101,9 +103,9 @@ export default function WeatherPage() {
   const advisory =
     current.precipitationMm > 5
       ? {
-          eyebrow: 'Advisory / Rain',
-          title: 'Heavy rain expected',
-          body: 'Delay fertilizer application and spraying to avoid runoff. Ensure drainage channels are clear.',
+          eyebrow: t('weather.advisoryRain'),
+          title: t('weather.heavyRainExpected'),
+          body: t('weather.heavyRainBody'),
           icon: CloudRain,
           cardBg: '#3a4a52',
           iconBg: '#4f636b',
@@ -114,9 +116,9 @@ export default function WeatherPage() {
         }
       : current.temperatureC > 35
         ? {
-            eyebrow: 'Advisory / Heat',
-            title: 'High temperatures',
-            body: 'Ensure adequate irrigation in the late afternoon. Protect temperature-sensitive crops with shade netting if possible.',
+            eyebrow: t('weather.advisoryHeat'),
+            title: t('weather.highTemperatures'),
+            body: t('weather.highTempBody'),
             icon: Sun,
             cardBg: '#5c3b2e',
             iconBg: '#75503f',
@@ -126,9 +128,9 @@ export default function WeatherPage() {
             bodyColor: '#e0c8b8',
           }
         : {
-            eyebrow: 'Advisory / Field',
-            title: 'Optimal conditions',
-            body: 'Weather is perfect for routine field maintenance, spraying, and harvesting. Proceed with planned agricultural activities.',
+            eyebrow: t('weather.advisoryField'),
+            title: t('weather.optimalConditions'),
+            body: t('weather.optimalConditionsBody'),
             icon: Leaf,
             cardBg: '#27351d',
             iconBg: '#3a4a2c',
@@ -168,7 +170,7 @@ export default function WeatherPage() {
                   {Math.round(current.temperatureC)}°
                 </p>
                 <p className="mt-3 text-[15px] font-semibold text-[#f0ede3]">{current.condition}</p>
-                <p className="mt-1 text-[12px] text-[#c9d0c1]">Feels like {Math.round(current.feelsLikeC)}°</p>
+                <p className="mt-1 text-[12px] text-[#c9d0c1]">{t('weather.feelsLike', { temp: String(Math.round(current.feelsLikeC)) })}</p>
               </div>
 
               {/* Decorative glyph — same construction language as the homepage snapshot */}
@@ -211,7 +213,7 @@ export default function WeatherPage() {
             <p className="mt-3 text-[1.4rem] font-semibold leading-none tracking-[-0.03em] text-[#25291f]">
               {current.humidityPercent}%
             </p>
-            <p className="mt-1.5 font-mono text-[9px] font-bold uppercase tracking-[0.14em] text-[#898274]">Humidity</p>
+            <p className="mt-1.5 font-mono text-[9px] font-bold uppercase tracking-[0.14em] text-[#898274]">{t('weather.humidity')}</p>
           </div>
 
           <div className="group rounded-[22px] border border-[#d8d0bf] bg-[#fffdf7] p-4 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_16px_35px_rgba(63,55,38,0.08)]">
@@ -222,7 +224,7 @@ export default function WeatherPage() {
               {current.windSpeedKmh}
               <span className="text-[11px] font-semibold text-[#898274]"> km/h</span>
             </p>
-            <p className="mt-1.5 font-mono text-[9px] font-bold uppercase tracking-[0.14em] text-[#898274]">Wind</p>
+            <p className="mt-1.5 font-mono text-[9px] font-bold uppercase tracking-[0.14em] text-[#898274]">{t('weather.wind')}</p>
           </div>
 
           <div className="group rounded-[22px] border border-[#d8d0bf] bg-[#fffdf7] p-4 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_16px_35px_rgba(63,55,38,0.08)]">
@@ -233,7 +235,7 @@ export default function WeatherPage() {
               {current.precipitationMm}
               <span className="text-[11px] font-semibold text-[#898274]"> mm</span>
             </p>
-            <p className="mt-1.5 font-mono text-[9px] font-bold uppercase tracking-[0.14em] text-[#898274]">Rainfall</p>
+            <p className="mt-1.5 font-mono text-[9px] font-bold uppercase tracking-[0.14em] text-[#898274]">{t('weather.rainfall')}</p>
           </div>
         </section>
 
@@ -243,8 +245,8 @@ export default function WeatherPage() {
         <section>
           <div className="mb-3 flex items-end justify-between">
             <div>
-              <p className="font-mono text-[9px] font-bold uppercase tracking-[0.16em] text-[#898274]">Outlook</p>
-              <h2 className="mt-1 text-[19px] font-extrabold tracking-[-0.02em] text-[#292c23]">7-day forecast</h2>
+              <p className="font-mono text-[9px] font-bold uppercase tracking-[0.16em] text-[#898274]">{t('weather.outlook')}</p>
+              <h2 className="mt-1 text-[19px] font-extrabold tracking-[-0.02em] text-[#292c23]">{t('weather.sevenDayForecast')}</h2>
             </div>
           </div>
 
@@ -252,7 +254,7 @@ export default function WeatherPage() {
             {daily.map((d: any, idx: number) => {
               const Icon = getWeatherIcon(d.weatherCode)
               const dayLabel =
-                idx === 0 ? 'Today' : idx === 1 ? 'Tomorrow' : new Date(d.date).toLocaleDateString('en-US', { weekday: 'short' })
+                idx === 0 ? t('weather.today') : idx === 1 ? t('weather.tomorrow') : new Date(d.date).toLocaleDateString(language === 'hi' ? 'hi-IN' : 'en-US', { weekday: 'short' })
 
               const minTemp = Math.round(d.tempMinC)
               const maxTemp = Math.round(d.tempMaxC)
@@ -295,8 +297,8 @@ export default function WeatherPage() {
         ================================================= */}
         <section>
           <div className="mb-3">
-            <p className="font-mono text-[9px] font-bold uppercase tracking-[0.16em] text-[#898274]">Recommendation</p>
-            <h2 className="mt-1 text-[19px] font-extrabold tracking-[-0.02em] text-[#292c23]">Farm advisory</h2>
+            <p className="font-mono text-[9px] font-bold uppercase tracking-[0.16em] text-[#898274]">{t('weather.recommendation')}</p>
+            <h2 className="mt-1 text-[19px] font-extrabold tracking-[-0.02em] text-[#292c23]">{t('weather.farmAdvisory')}</h2>
           </div>
 
           <div className="rounded-[22px] p-5" style={{ backgroundColor: advisory.cardBg }}>
