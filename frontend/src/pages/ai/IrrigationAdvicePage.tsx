@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from 'react'
+import { useEffect, useState, type FormEvent } from 'react'
 import { Link } from 'react-router-dom'
 import { AlertTriangle, Droplets, RotateCcw } from 'lucide-react'
 import { Button } from '@/components/common/Button'
@@ -7,10 +7,11 @@ import { useAi } from '@/context/AiContext'
 import { useLanguage } from '@/context/LanguageContext'
 import { cropAnalysisService, type AdvisoryResult } from '@/services/aiService'
 import { getApiErrorMessage } from '@/services/api'
-import { mandiCrops } from '@/data/mock/mockMandiData'
+import { mandiService } from '@/services/mandiService'
 
 export default function IrrigationAdvicePage() {
-  const [crop, setCrop] = useState(mandiCrops[0])
+  const [crops, setCrops] = useState<string[]>([])
+  const [crop, setCrop] = useState('')
   const [soil, setSoil] = useState('Black soil')
   const [location, setLocation] = useState('')
   const [result, setResult] = useState<AdvisoryResult | null>(null)
@@ -18,6 +19,27 @@ export default function IrrigationAdvicePage() {
   const [error, setError] = useState('')
   const { refreshHistory } = useAi()
   const { language } = useLanguage()
+
+  useEffect(() => {
+    let cancelled = false
+    mandiService.getCrops()
+      .then((response) => {
+        const items = response?.data ?? response ?? []
+        const names = Array.isArray(items)
+          ? items.map((item: { name?: string } | string) => typeof item === 'string' ? item : item.name).filter((name): name is string => Boolean(name))
+          : []
+        if (!cancelled) {
+          setCrops(names)
+          if (names.length > 0) {
+            setCrop(names[0])
+          }
+        }
+      })
+      .catch((err) => {
+        console.error('Failed to load crops', err)
+      })
+    return () => { cancelled = true }
+  }, [])
 
   async function handleSubmit(event: FormEvent) {
     event.preventDefault()
@@ -89,7 +111,7 @@ export default function IrrigationAdvicePage() {
 
       <form onSubmit={handleSubmit}>
         <SelectField id="crop" label="Current Crop" value={crop} onChange={(e) => setCrop(e.target.value)}>
-          {mandiCrops.map((c) => (
+          {crops.map((c) => (
             <option key={c}>{c}</option>
           ))}
         </SelectField>
@@ -111,7 +133,7 @@ export default function IrrigationAdvicePage() {
           />
         </div>
         {error && <p className="mb-3 text-xs font-medium text-danger-500">{error}</p>}
-        <Button type="submit" fullWidth loading={isLoading}>
+        <Button type="submit" fullWidth loading={isLoading} disabled={!crops.length || !crop.trim()}>
           Get Irrigation Advice
         </Button>
       </form>

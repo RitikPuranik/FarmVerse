@@ -7,7 +7,7 @@ interface AdminContextValue {
   isLoadingApplications: boolean
   refreshApplications: () => Promise<void>
   approveApplication: (id: string) => Promise<void>
-  rejectApplication: (id: string) => Promise<void>
+  rejectApplication: (id: string, note: string) => Promise<void>
 }
 
 const AdminContext = createContext<AdminContextValue | null>(null)
@@ -39,8 +39,8 @@ export function AdminProvider({ children }: { children: ReactNode }) {
     setSellerApplications((prev) => prev.map((a) => (a.id === id ? { ...a, status } : a)))
   }, [])
 
-  const rejectApplication = useCallback(async (id: string) => {
-    const status = await sellerService.reviewApplication(id, 'REJECT')
+  const rejectApplication = useCallback(async (id: string, note: string) => {
+    const status = await sellerService.reviewApplication(id, 'REJECT', note)
     setSellerApplications((prev) => prev.map((a) => (a.id === id ? { ...a, status } : a)))
   }, [])
 
