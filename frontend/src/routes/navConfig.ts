@@ -12,7 +12,6 @@ import {
   PackageCheck,
   PlusSquare,
   Settings,
-  ShieldCheck,
   Sparkles,
   Star,
   Store,
@@ -24,6 +23,7 @@ import {
   Wheat,
 } from 'lucide-react'
 import type { TranslationKey } from '@/context/LanguageContext'
+import { AdminSellerNavIcon } from '@/components/layout/AdminSellerNavIcon'
 
 export interface NavItem {
   path: string
@@ -31,7 +31,6 @@ export interface NavItem {
   icon: LucideIcon
 }
 
-/** Desktop sidebar — Buy mode. */
 export const buyNavItems: NavItem[] = [
   { path: '/home', labelKey: 'nav.home', icon: Home },
   { path: '/market', labelKey: 'nav.market', icon: Store },
@@ -44,7 +43,6 @@ export const buyNavItems: NavItem[] = [
   { path: '/seeds', labelKey: 'nav.seeds', icon: Wheat },
 ]
 
-/** Desktop sidebar — Sell mode. Same account, different toolset. */
 export const sellNavItems: NavItem[] = [
   { path: '/seller/dashboard', labelKey: 'nav.sellerDashboard', icon: LayoutDashboard },
   { path: '/seller/listings', labelKey: 'nav.myListings', icon: List },
@@ -56,16 +54,14 @@ export const sellNavItems: NavItem[] = [
   { path: '/mandi', labelKey: 'nav.mandi', icon: LineChart },
 ]
 
-/** Seller-only utility link, kept above notifications in the sidebar. */
 export const sellerUtilityNavItems: NavItem[] = [
   { path: '/seller/feedback', labelKey: 'nav.sellerFeedback', icon: MessageSquareText },
 ]
 
-/** Desktop sidebar — Admin mode. Shown instead of buy/sell nav for admin accounts. */
 export const adminNavItems: NavItem[] = [
   { path: '/admin', labelKey: 'nav.adminDashboard', icon: LayoutDashboard },
   { path: '/admin/users', labelKey: 'nav.adminUsers', icon: Users },
-  { path: '/admin/sellers', labelKey: 'nav.adminSellers', icon: ShieldCheck },
+  { path: '/admin/sellers', labelKey: 'nav.adminSellers', icon: AdminSellerNavIcon },
   { path: '/admin/products', labelKey: 'nav.adminProducts', icon: Store },
   { path: '/admin/categories', labelKey: 'nav.adminCategories', icon: Tags },
   { path: '/admin/reviews', labelKey: 'nav.adminReviews', icon: Star },
@@ -75,7 +71,6 @@ export const adminNavItems: NavItem[] = [
   { path: '/admin/orders', labelKey: 'nav.adminShipments', icon: Truck },
 ]
 
-/** Always visible at the foot of the sidebar, regardless of mode. */
 export const utilityNavItems: NavItem[] = [
   { path: '/notifications', labelKey: 'nav.notifications', icon: Bell },
   { path: '/settings', labelKey: 'nav.settings', icon: Settings },
