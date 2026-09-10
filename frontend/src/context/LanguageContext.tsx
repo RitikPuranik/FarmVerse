@@ -50,10 +50,10 @@ function getInitialLanguage(): string {
 
 export function LanguageProvider({ children }: { children: ReactNode }) {
   const [language, setLanguageState] = useState<string>(getInitialLanguage)
-  // Bumped once a lazily-fetched translation file finishes loading, so t()
-  // re-renders against the real table instead of staying on the English
-  // fallback it used while the file was in flight.
-  const [, forceRerender] = useState(0)
+  const [loadedLanguages, setLoadedLanguages] = useState<Record<string, boolean>>(() => ({
+    en: true,
+    ...(translations[getInitialLanguage()] ? { [getInitialLanguage()]: true } : {}),
+  }))
 
   useEffect(() => {
     document.documentElement.lang = language
@@ -62,7 +62,9 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     if (!translations[language]) {
       let cancelled = false
       loadTranslation(language).then(() => {
-        if (!cancelled) forceRerender((n) => n + 1)
+        if (!cancelled) {
+          setLoadedLanguages((prev) => ({ ...prev, [language]: true }))
+        }
       })
       return () => {
         cancelled = true
@@ -90,7 +92,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
       }
       return value
     },
-    [language],
+    [language, loadedLanguages],
   )
 
   const value = useMemo(
