@@ -1,1 +1,0 @@
-Temporary file for PR permission test. This file will be removed before the final seller onboarding PR.
