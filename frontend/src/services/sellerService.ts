@@ -98,7 +98,6 @@ function mapApplication(a: BackendSellerApplication): SellerApplication {
 }
 
 export const sellerService = {
-  /** Current user's own application/profile. Throws (404) if they've never applied. */
   async getMyProfile(): Promise<SellerProfile> {
     const res = await api.get<{ data: SellerProfile }>('/sellers/me')
     return res.data.data
@@ -124,13 +123,13 @@ export const sellerService = {
     return { items: res.data.data, meta: { totalItems: res.data.meta.pagination.totalItems } }
   },
 
-  // --- Admin: verification console ---------------------------------------
-
   async listApplications(status?: SellerVerificationStatus): Promise<SellerApplication[]> {
     const res = await api.get<{ data: BackendSellerApplication[] }>('/sellers/applications', {
       params: { status, limit: 100 },
     })
-    return res.data.data.map(mapApplication)
+    return res.data.data
+      .map(mapApplication)
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
   },
 
   async reviewApplication(id: string, decision: 'APPROVE' | 'REJECT', note?: string): Promise<SellerVerificationStatus> {
