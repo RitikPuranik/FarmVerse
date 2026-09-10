@@ -1,19 +1,30 @@
 import { api } from './api'
 
-export type SellerVerificationStatus = 'PENDING' | 'APPROVED' | 'REJECTED'
+export type SellerVerificationStatus = 'UNSUBMITTED' | 'PENDING' | 'APPROVED' | 'REJECTED'
 
 export interface SellerApplyInput {
   businessName: string
   gstNumber?: string
-  bankAccountNumber?: string
-  bankIfsc?: string
-  bankAccountName?: string
+  farmSizeAcres: number
+  primaryCrop: string
+  village: string
+  bankAccountHolder: string
+  bankAccountNumber: string
+  bankIfscCode: string
+  bankName: string
 }
 
 export interface SellerProfile {
   id: string
   userId: string
   businessName: string
+  farmSizeAcres?: number | null
+  primaryCrop?: string | null
+  village?: string | null
+  bankAccountHolder?: string | null
+  bankAccountNumber?: string | null
+  bankIfscCode?: string | null
+  bankName?: string | null
   verificationStatus: SellerVerificationStatus
   verificationNote?: string | null
   createdAt: string

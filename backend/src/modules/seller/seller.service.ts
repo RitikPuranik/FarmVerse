@@ -12,10 +12,47 @@ import type {
   SellerReviewsQuery,
 } from './seller.validation';
 
+interface FarmingDetails {
+  farmSizeAcres: number;
+  primaryCrop: string;
+  village: string;
+}
+
+function encodeFarmingDetails(data: FarmingDetails): string {
+  return JSON.stringify({
+    _farmverseFarmingDetails: true,
+    farmSizeAcres: data.farmSizeAcres,
+    primaryCrop: data.primaryCrop,
+    village: data.village,
+  });
+}
+
+function decodeFarmingDetails(businessDescription: string | null): FarmingDetails | null {
+  if (!businessDescription) return null;
+  try {
+    const value = JSON.parse(businessDescription) as Partial<FarmingDetails> & { _farmverseFarmingDetails?: boolean };
+    if (value._farmverseFarmingDetails && typeof value.farmSizeAcres === 'number' && typeof value.primaryCrop === 'string' && typeof value.village === 'string') {
+      return {
+        farmSizeAcres: value.farmSizeAcres,
+        primaryCrop: value.primaryCrop,
+        village: value.village,
+      };
+    }
+  } catch {
+    // Existing free-text business descriptions are returned unchanged.
+  }
+  return null;
+}
+
+function withFarmingDetails<T extends { businessDescription: string | null }>(profile: T) {
+  const farming = decodeFarmingDetails(profile.businessDescription);
+  return farming ? { ...profile, ...farming } : profile;
+}
+
 export async function getMyProfile(userId: string) {
   const profile = await prisma.sellerProfile.findUnique({ where: { userId } });
   if (!profile) throw ApiError.notFound('You have not applied to become a seller yet.');
-  return profile;
+  return withFarmingDetails(profile);
 }
 
 /** Create the initial application, or re-submit after a rejection. */
@@ -30,14 +67,17 @@ export async function applyAsSeller(userId: string, data: ApplyInput) {
     );
   }
 
+  const { farmSizeAcres, primaryCrop, village, ...profileData } = data;
+  const businessDescription = encodeFarmingDetails({ farmSizeAcres, primaryCrop, village });
+
   const profile = existing
     ? await prisma.sellerProfile.update({
         where: { userId },
-        data: { ...data, verificationStatus: 'PENDING', reviewedById: null, reviewedAt: null, verificationNote: null },
+        data: { ...profileData, businessDescription, verificationStatus: 'PENDING', reviewedById: null, reviewedAt: null, verificationNote: null },
       })
-    : await prisma.sellerProfile.create({ data: { ...data, userId, verificationStatus: 'PENDING' } });
+    : await prisma.sellerProfile.create({ data: { ...profileData, businessDescription, userId, verificationStatus: 'PENDING' } });
 
-  return profile;
+  return withFarmingDetails(profile);
 }
 
 export async function updateMyProfile(userId: string, data: UpdateSellerProfileInput) {

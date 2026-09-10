@@ -24,9 +24,17 @@ export default function AdminSellersPage() {
   }
 
   async function handleReject(id: string) {
+    const note = window.prompt('Enter the reason for rejecting this seller application:')
+    if (note === null) return
+    const trimmed = note.trim()
+    if (!trimmed) {
+      window.alert('A rejection reason is required.')
+      return
+    }
+
     setBusyId(id)
     try {
-      await rejectApplication(id)
+      await rejectApplication(id, trimmed)
     } finally {
       setBusyId(null)
     }
