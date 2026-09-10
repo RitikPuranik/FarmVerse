@@ -17,9 +17,7 @@ export function GuestOnly() {
       return <Navigate to={requested?.startsWith('/seller') ? requested : '/home'} replace />
     }
 
-    const safeNext = requested && !requested.startsWith('/admin') && !requested.startsWith('/seller')
-      ? requested
-      : '/home'
+    const safeNext = requested && !requested.startsWith('/admin') && !requested.startsWith('/seller') ? requested : '/home'
     return <Navigate to={safeNext} replace />
   }
 
